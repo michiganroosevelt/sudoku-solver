@@ -14,28 +14,12 @@ public class SudokuBoard {
 
 	private int[][] _board = new int[BOARD_SIZE][BOARD_SIZE];
 
+	public SudokuBoard(SudokuBoard aBoard) {
+		this._board = aBoard.getBoardCopy();
+	}
+	
 	public SudokuBoard(int[][] board) {
 		this._board = board;
-	}
-
-	public void setBoard(int[][] board) {
-		this._board = board;
-	}
-
-	public int[][] getBoard() {
-		int[][] boardCopy = new int[BOARD_SIZE][BOARD_SIZE];
-
-		for (int i = 0; i < BOARD_SIZE; i++) {
-			for (int j = 0; j < BOARD_SIZE; j++) {
-				boardCopy[i][j] = this._board[i][j];
-			}
-		}
-
-		return boardCopy;
-	}
-
-	public int getValue(int rowIndex, int columnIndex) {
-		return this._board[rowIndex][columnIndex];
 	}
 
 	public SudokuBoard(ArrayNode node) {
@@ -58,6 +42,31 @@ public class SudokuBoard {
 			i++;
 		}
 	}
+
+	public void setBoard(int[][] board) {
+		this._board = board;
+	}
+	
+	public void setSquareValue(int rowIndex, int columnIndex, int value) {
+		this._board[rowIndex][columnIndex] = value;
+	}
+	
+	public int[][] getBoardCopy() {
+		int[][] boardCopy = new int[BOARD_SIZE][BOARD_SIZE];
+
+		for (int i = 0; i < BOARD_SIZE; i++) {
+			for (int j = 0; j < BOARD_SIZE; j++) {
+				boardCopy[i][j] = this._board[i][j];
+			}
+		}
+
+		return boardCopy;
+	}
+
+	public int getValue(int rowIndex, int columnIndex) {
+		return this._board[rowIndex][columnIndex];
+	}
+
 
 	public String toString() {
 		ObjectMapper mapper = new ObjectMapper();

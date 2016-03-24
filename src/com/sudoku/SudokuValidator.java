@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SudokuValidator {
-	
+
 	public static boolean isSolved(SudokuBoard sudokuBoard) {
 		for (int i = 0; i < SudokuBoard.BOARD_SIZE; i++) {
 			for (int j = 0; j < SudokuBoard.BOARD_SIZE; j++) {
-				if (sudokuBoard.getValue(i,j) == 0) {
+				if (sudokuBoard.getValue(i, j) == 0) {
 					return false;
 				}
 			}
@@ -16,7 +16,21 @@ public class SudokuValidator {
 
 		return true;
 	}
+	
+	public static boolean isValidEntry(int rowIndex, int columnIndex, SudokuBoard sudokuBoard) {
+		if (!isValidBlocks(sudokuBoard)) {
+			return false;
+		}
+		
+		if (!isValidRow(rowIndex, sudokuBoard)) {
+			return false;
+		}
+		if (!isValidColumn(columnIndex, sudokuBoard)) {
+			return false;
+		}
 
+		return true;
+	}
 
 	public static boolean isValidBoard(SudokuBoard sudokuBoard) {
 		if (!isValidBlocks(sudokuBoard)) {
@@ -24,7 +38,7 @@ public class SudokuValidator {
 		}
 
 		for (int i = 0; i < SudokuBoard.BOARD_SIZE; i++) {
-			if (!isValidRow(i,sudokuBoard)) {
+			if (!isValidRow(i, sudokuBoard)) {
 				return false;
 			}
 			if (!isValidColumn(i, sudokuBoard)) {
@@ -38,7 +52,7 @@ public class SudokuValidator {
 	private static boolean isValidRow(int index, SudokuBoard sudokuBoard) {
 		Map<String, Boolean> row = new HashMap<String, Boolean>();
 		for (int i = 0; i < SudokuBoard.BOARD_SIZE; i++) {
-			int value =  sudokuBoard.getValue(index,i);
+			int value = sudokuBoard.getValue(index, i);
 			if (value == 0) {
 				continue;
 			}
@@ -56,7 +70,7 @@ public class SudokuValidator {
 	private static boolean isValidColumn(int index, SudokuBoard sudokuBoard) {
 		Map<String, Boolean> row = new HashMap<String, Boolean>();
 		for (int i = 0; i < SudokuBoard.BOARD_SIZE; i++) {
-			int value = sudokuBoard.getValue(i,index);
+			int value = sudokuBoard.getValue(i, index);
 			if (value == 0) {
 				continue;
 			}
@@ -98,7 +112,7 @@ public class SudokuValidator {
 		Map<String, Boolean> row = new HashMap<String, Boolean>();
 		for (int i = rowIndex; i < rowIndex + 3; i++) {
 			for (int j = columnIndex; j < columnIndex + 3; j++) {
-				int value = sudokuBoard.getValue(i,j);
+				int value = sudokuBoard.getValue(i, j);
 				if (value == 0) {
 					continue;
 				}
@@ -114,5 +128,4 @@ public class SudokuValidator {
 		return true;
 	}
 
-	
 }

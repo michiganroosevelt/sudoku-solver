@@ -15,8 +15,8 @@ public class SudokuController {
 	public @ResponseBody String solveSudoku(@RequestBody String input) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		SudokuBoard board = new SudokuBoard((ArrayNode) mapper.readTree(input));
-		SudokuSolver.solve(board);
-		return board.toString();
+		SudokuBoard solvedBoard = SudokuSolver.solve(board);
+		return solvedBoard.toString();
 	}
 
 	@RequestMapping(value = "/board", method = RequestMethod.GET)
