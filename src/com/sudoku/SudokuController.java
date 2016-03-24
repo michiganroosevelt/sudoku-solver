@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class SudokuSolverController {
+public class SudokuController {
 
 	@RequestMapping(value = "/board", method = RequestMethod.POST)
 	public @ResponseBody String solveSudoku(@RequestBody String input) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		SudokuBoard board = new SudokuBoard((ArrayNode) mapper.readTree(input));
-		board.solve();
+		SudokuSolver.solve(board);
 		return board.toString();
 	}
 
