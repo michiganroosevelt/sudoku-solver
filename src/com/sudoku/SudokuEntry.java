@@ -13,6 +13,18 @@ public class SudokuEntry {
 		_columnIndex = columnIndex;
 		_possibleValues = possibleValues;
 	}
+	
+	public void popFirstValue() {
+		if( _possibleValues == null || _possibleValues.length == 0 ) {
+			return;
+		}
+		
+		int[] newValues = new int[_possibleValues.length - 1];
+		for (int i = 1; i < _possibleValues.length; i++) {
+			newValues[i - 1] = _possibleValues[i];
+		}
+		this._possibleValues = newValues;
+	}
 
 	public int getRowIndex() {
 		return _rowIndex;
@@ -32,6 +44,14 @@ public class SudokuEntry {
 
 	public int[] getPossibleValues() {
 		return _possibleValues;
+	}
+	
+	public int getNextValue() {
+		if( this._possibleValues == null || this._possibleValues.length <= 0) {
+			return 0;
+		} else {
+			return this._possibleValues[0];
+		}
 	}
 
 	@Override

@@ -49,8 +49,8 @@ publicControllers.controller('SudokuSolverController', [ '$scope', 'Board', func
 		return cleanBoard(new_board);
 	}
 
-	var getBoard = function() {
-		Board().get(function(data) {
+	$scope.getBoard = function(version) {
+		Board(version).get(function(data) {
 			$scope.board = cleanBoard(transformResult(data));
 		}, function(error) {
 			$scope.message = "Error in getBoard()";
@@ -68,6 +68,6 @@ publicControllers.controller('SudokuSolverController', [ '$scope', 'Board', func
 		return board;
 	}
 
-	$scope.board = getBoard();
+	$scope.board = generateBoard();
 
 } ]);

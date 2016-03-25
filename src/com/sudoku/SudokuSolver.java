@@ -4,7 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class SudokuSolver {
+
+	static Logger logger = LoggerFactory.getLogger(SudokuSolver.class);
 
 	public static boolean isSolved(SudokuBoard sudokuBoard) {
 		for (int i = 0; i < SudokuBoard.BOARD_SIZE; i++) {
@@ -19,38 +24,69 @@ public class SudokuSolver {
 	}
 
 	public static SudokuBoard solve(SudokuBoard sudokuBoard) throws SudokuSquareException {
+		return solve(sudokuBoard, 0);
+	}
+
+	public static SudokuBoard solve(SudokuBoard sudokuBoard, int attempt) throws SudokuSquareException {
 		int counter = 0;
 		while (!isSolved(sudokuBoard)) {
-			System.out.println("next iteration: " + ++counter);
+			counter++;
+			logger.debug("Solving Attempt: " + attempt + ", Current Loop: " + counter);
 			boolean madeProgress = solveNextIteration(sudokuBoard);
-			if( madeProgress ) {
+			if (madeProgress) {
 				continue;
 			}
-			
+
 			SudokuEntry nextSquare = buildPossibleValues(sudokuBoard).get(0);
-			sudokuBoard = solveNextIterationGuessing(sudokuBoard, nextSquare);
+			sudokuBoard = solveNextIterationGuessing(sudokuBoard, nextSquare, attempt);
 		}
-		
+
 		return sudokuBoard;
 	}
-	
-	private static SudokuBoard solveNextIterationGuessing(SudokuBoard sudokuBoard, SudokuEntry nextSquare) {
+
+	private static SudokuEntry getNextSquare(SudokuBoard sudokuBoard, SudokuEntry currentSquare)
+			throws SudokuSquareException {
+		List<SudokuEntry> squares = buildPossibleValues(sudokuBoard);
+
+		for (SudokuEntry entry : squares) {
+			if ((entry.getColumnIndex() <= currentSquare.getColumnIndex())
+					&& (entry.getRowIndex() <= currentSquare.getRowIndex())) {
+				continue;
+			} else {
+				return entry;
+			}
+		}
+
+		throw new SudokuSquareException("ran out of possible squares");
+	}
+
+	private static SudokuBoard solveNextIterationGuessing(SudokuBoard sudokuBoard, SudokuEntry nextSquare,
+			int attempt) throws SudokuSquareException {
 		try {
 			SudokuBoard copy = new SudokuBoard(sudokuBoard);
-			if( nextSquare.getPossibleValuesLength() == 0 ) {
-				nextSquare = buildPossibleValues(sudokuBoard).get(1);
+			if (nextSquare.getPossibleValuesLength() == 0) {
+				nextSquare = getNextSquare(sudokuBoard, nextSquare);
 			}
-			copy.setSquareValue(nextSquare.getRowIndex(), nextSquare.getColumnIndex(), nextSquare.getPossibleValues()[0]);
-			SudokuBoard solvedBoard = solve(copy);
+
+			int rowIndex = nextSquare.getRowIndex();
+			int columnIndex = nextSquare.getColumnIndex();
+			int value = nextSquare.getNextValue();
+
+			logger.debug("guessing for row " + rowIndex + ", col: " + columnIndex + ", with value: " + value);
+			copy.setSquareValue(rowIndex, columnIndex, value);
+			SudokuBoard solvedBoard = solve(copy, (attempt + 1));
 			return solvedBoard;
 		} catch (SudokuSquareException e) {
-			int[] values = nextSquare.getPossibleValues();
-			int[] newValues = new int[values.length-1];
-			for( int i = 1; i < values.length; i++ ) {
-				newValues[i-1] = values[i];
-			}
-			SudokuEntry newEntry = new SudokuEntry(nextSquare.getRowIndex(), nextSquare.getColumnIndex(), newValues);
-			return solveNextIterationGuessing(sudokuBoard, newEntry);
+			nextSquare.popFirstValue();
+			int rowIndex = nextSquare.getRowIndex();
+			int columnIndex = nextSquare.getColumnIndex();
+			int value = nextSquare.getNextValue();
+
+			logger.debug("SudokuSquareException:  " + rowIndex + ", col: " + columnIndex + ", with value: " + value);
+			SudokuBoard copy = new SudokuBoard(sudokuBoard);
+			copy.setSquareValue(rowIndex, columnIndex, value);
+			
+			return solve(copy, (attempt+1));
 		}
 	}
 
@@ -85,6 +121,10 @@ public class SudokuSolver {
 		}
 
 		Collections.sort(allPossibleValues, new SudokuComparator());
+		logger.debug("Possible Value Size: " + allPossibleValues.size());
+		for (SudokuEntry entry : allPossibleValues) {
+			logger.debug(entry.toString());
+		}
 		return allPossibleValues;
 	}
 
@@ -112,12 +152,6 @@ public class SudokuSolver {
 		}
 
 		return returnValues;
-	}
-
-	private static void print(List<SudokuEntry> possibleValues) {
-		for (SudokuEntry entry : possibleValues) {
-			System.out.println(entry.toString());
-		}
 	}
 
 }

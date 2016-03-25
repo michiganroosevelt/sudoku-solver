@@ -1,7 +1,12 @@
 var sudokuServices = angular.module('sudokuServices', [ 'ngResource' ]);
 sudokuServices.factory('Board', [ '$resource', function($resource) {
-	return function() {
-		return $resource('../sudoku-solver//board', null, {
+	return function(version) {
+		var params = '';
+		if( version ) {
+			params = "?version=" + version;
+		}
+		
+		return $resource('../sudoku-solver//board' + params, null, {
 			solve : {
 				method : 'POST',
 				isArray : true,
